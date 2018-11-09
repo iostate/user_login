@@ -124,13 +124,14 @@ module.exports = function(app) {
   app.post('/api/login', logValidation, loginUser);
   //------------------------------------------------
 
-  app.get('/api/isloggedin', (req, res) => {
+  function isLoggedIn(req, res) {
     if (req.session.isLoggedIn) {
       res.send(true);
     } else {
       res.send(false);
     }
-  });
+  }
+  app.get('/api/isloggedin', isLoggedIn);
 
   //------------------------------------------------
   // post validation
@@ -164,4 +165,34 @@ module.exports = function(app) {
     }
   }
   app.post('/api/addpost', postValidation, addPost);
+  //------------------------------------------------
+  // upvote
+  app.post('/api/postupvote/:id', isLoggedIn, (req, res) => {
+    // find post by ID in database
+    Post.findById(req.params.id).then(function(post) {
+      post.vote = post.vote + 1; // increase vote property - see Post Model to see vote property in there
+      post.save().then(function(post) {
+        res.send(post);
+      });
+    });
+  });
+
+  //------------------------------------------------------
+  function showPosts(req, res) {
+    Post.find()
+      .populate('user', ['username', 'email'])
+      .sort({vote: 'desc'})
+      .then(post => {
+        res.json(post);
+      })
+      .catch(error => {
+        res.json(error);
+      });
+  }
+  app.get('/api/showposts', isLoggedIn, showPosts);
+
+  app.get('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.send({message: 'Logged out!'});
+  });
 };
