@@ -127,11 +127,11 @@ module.exports = function(app) {
 
   function isLoggedIn(req, res) {
     if (req.session.isLoggedIn) {
-      console.log(true);
       res.send(true);
+      console.log(true);
     } else {
-      console.log(false);
       res.send(false);
+      console.log(false);
     }
   }
   app.get('/api/isloggedin', isLoggedIn);
