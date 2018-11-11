@@ -7,10 +7,12 @@ export class Register extends Component {
     this.state = {
       username: '',
       email: '',
+      errors: null,
       firstname: '',
       lastname: '',
       password: '',
       passwordconf: '',
+      success: false,
       userdata: null,
     };
     this.changeHandler = this.changeHandler.bind(this);
@@ -29,17 +31,17 @@ export class Register extends Component {
       .post('http://localhost:8000/api/register', this.state)
       // .then(result => console.log(result.data))
       .then(result => {
-        // this.setState({
-        //   [errors]: result.data.errors,
-        // });
+        // fail
         if (result.data.errors) {
-          console.log(result);
+          console.log(result.data);
           // places errors property onto state w/ errors
           return this.setState(result.data);
         }
+        // success
         console.log(result);
-
-        return this.setState({userdata: result.data});
+        // set state.userdata to contain login information
+        // and errors to be null, since there are no errors
+        return this.setState({userdata: result, errors: null, success: true});
       });
     // .catch(error => console.log(error.result));
   }
@@ -47,6 +49,7 @@ export class Register extends Component {
   render() {
     return (
       <div>
+        {this.state.success && <p>You are successfully registered.</p>}
         <form onSubmit={this.submitHandler}>
           <input
             type="text"
