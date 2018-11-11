@@ -13,6 +13,7 @@ const Post = require('./models/Post');
 // route stuff goes here
 module.exports = function(app) {
   const regValidation = [
+    // .withMessage() sends message to res.email.msg
     check('email')
       .not()
       .isEmpty()
@@ -46,7 +47,7 @@ module.exports = function(app) {
       .isLength({min: 6})
       .withMessage('Password should be at least 6 characters'),
     check(
-      'password_con',
+      'passwordconf',
       'Password confirmation  is required or should be the same as password'
     ).custom(function(value, {req}) {
       if (value !== req.body.password) {
@@ -126,8 +127,10 @@ module.exports = function(app) {
 
   function isLoggedIn(req, res) {
     if (req.session.isLoggedIn) {
+      console.log(true);
       res.send(true);
     } else {
+      console.log(false);
       res.send(false);
     }
   }

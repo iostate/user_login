@@ -13,6 +13,14 @@ app.use(bodyparser.json());
 mongoose.connect(
   `mongodb://${process.env.MONGODB_USERPASS}@ds157493.mlab.com:57493/loginreg`
 );
+app.use(
+  cors({
+    // adds session property to req, like this: req.session
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'HEAD', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
+    credentials: true, //allow setting of cookies
+  })
+);
 
 app.use(
   session({
