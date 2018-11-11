@@ -7,13 +7,13 @@ export class Login extends Component {
     this.state = {
       email: '',
       password: '',
+      success: false,
     };
     this.changeHandler = this.changeHandler.bind(this);
     this.submitHandler = this.submitHandler.bind(this);
   }
 
   changeHandler(e) {
-    e.preventDefault();
     this.setState({
       [e.target.name]: e.target.value,
     });
@@ -21,15 +21,18 @@ export class Login extends Component {
 
   submitHandler(e) {
     e.preventDefault();
-    axios
-      .post('http://localhost:8000/api/login', this.state)
-      .then(result => console.log(result))
-      .catch(error => console.log(error.result));
+    axios.post('http://localhost:8000/api/login', this.state).then(res => {
+      if (res.data.error) {
+        return this.setState({error: res.data.message});
+      }
+      return (window.location = '/mainpage');
+    });
   }
+
   render() {
     return (
       <div>
-        <form>
+        <form onSubmit={this.submitHandler}>
           <input
             placeholder="Login Email"
             type="email"
@@ -45,6 +48,7 @@ export class Login extends Component {
             id="passwordlogin"
             onChange={this.changeHandler}
           />{' '}
+          {this.state.error && <p>{this.state.error}</p>}
           <br />
           <button type="Submit">Submit</button>
         </form>
