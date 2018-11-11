@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 
 export class Register extends Component {
   constructor(props) {
@@ -10,8 +11,10 @@ export class Register extends Component {
       lastname: '',
       password: '',
       passwordconf: '',
+      userdata: null,
     };
     this.changeHandler = this.changeHandler.bind(this);
+    this.submitHandler = this.submitHandler.bind(this);
   }
 
   changeHandler(e) {
@@ -20,10 +23,31 @@ export class Register extends Component {
     });
   }
 
+  submitHandler(e) {
+    e.preventDefault();
+    axios
+      .post('http://localhost:8000/api/register', this.state)
+      // .then(result => console.log(result.data))
+      .then(result => {
+        // this.setState({
+        //   [errors]: result.data.errors,
+        // });
+        if (result.data.errors) {
+          console.log(result);
+          // places errors property onto state w/ errors
+          return this.setState(result.data);
+        }
+        console.log(result);
+
+        return this.setState({userdata: result.data});
+      });
+    // .catch(error => console.log(error.result));
+  }
+
   render() {
     return (
       <div>
-        <form>
+        <form onSubmit={this.submitHandler}>
           <input
             type="text"
             placeholder="username"
@@ -31,6 +55,9 @@ export class Register extends Component {
             id="username"
             onChange={this.changeHandler}
           />
+          {this.state.errors && this.state.errors.username && (
+            <p>{this.state.errors.username.msg}</p>
+          )}
           <br />
           <input
             type="email"
@@ -39,6 +66,9 @@ export class Register extends Component {
             id="email"
             onChange={this.changeHandler}
           />
+          {this.state.errors && this.state.errors.email && (
+            <p>{this.state.errors.email.msg}</p>
+          )}
           <br />
           <input
             type="text"
@@ -47,6 +77,9 @@ export class Register extends Component {
             id="firstname"
             onChange={this.changeHandler}
           />
+          {this.state.errors && this.state.errors.firstname && (
+            <p>{this.state.errors.firstname.msg}</p>
+          )}
           <br />
           <input
             type="text"
@@ -55,6 +88,9 @@ export class Register extends Component {
             id="lastname"
             onChange={this.changeHandler}
           />{' '}
+          {this.state.errors && this.state.errors.lastname && (
+            <p>{this.state.errors.lastname.msg}</p>
+          )}
           <br />
           <input
             type="password"
@@ -63,6 +99,9 @@ export class Register extends Component {
             id="password"
             onChange={this.changeHandler}
           />{' '}
+          {this.state.errors && this.state.errors.password && (
+            <p>{this.state.errors.password.msg}</p>
+          )}
           <br />
           <input
             type="password"
@@ -71,8 +110,11 @@ export class Register extends Component {
             id="passwordconf"
             onChange={this.changeHandler}
           />{' '}
+          {this.state.errors && this.state.errors.passwordconf && (
+            <p>{this.state.errors.passwordconf.msg}</p>
+          )}
           <br />
-          <button type="submit">Submit</button>
+          <button type="Submit">Submit</button>
         </form>
       </div>
     );
